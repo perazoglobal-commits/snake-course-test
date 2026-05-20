@@ -14,7 +14,7 @@ GREEN = (0, 255, 0)
 BLUE = (50, 153, 213)
 
 # Screen dimensions
-WIDTH = 800
+WIDTH = 1000
 HEIGHT = 800
 
 # Snake properties
