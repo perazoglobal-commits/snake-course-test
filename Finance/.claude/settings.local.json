@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm info *)",
+      "Bash(npm show *)",
+      "PowerShell(npx shadcn@latest add button card input label select table badge dialog checkbox --yes 2>&1)"
+    ]
+  }
+}

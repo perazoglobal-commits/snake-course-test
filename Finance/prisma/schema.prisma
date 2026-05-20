@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  type        String
+  category    String
+  amount      Float
+  date        DateTime
+  description String?
+  isRecurring Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model StockHolding {
+  id               String    @id @default(uuid())
+  symbol           String    @unique
+  shares           Float
+  averageCost      Float?
+  lastClosingPrice Float?
+  lastUpdated      DateTime?
+  createdAt        DateTime  @default(now())
+}
