@@ -2,14 +2,21 @@
 
 import { useState, useRef } from "react";
 
-const WEBHOOK_URL =
-  "https://perazo.app.n8n.cloud/webhook/55c3f40e-551a-465d-b784-0f4c9036fe46";
-const TIMEOUT_MS = 30_000;
+const API_ROUTE = "/api/tryon";
+const TIMEOUT_MS = 35_000; // slightly longer than server's 30s so server error wins
 
 interface TryOnState {
   isLoading: boolean;
   resultUrl: string | null;
   error: string | null;
+}
+
+function errorFromStatus(status: number): string {
+  if (status === 400) return "Invalid images. Check format and size.";
+  if (status === 502 || status === 500) return "AI processing error. Check your images.";
+  if (status === 503) return "Server is busy. Please try again.";
+  if (status === 504) return "Server is busy. Please try again.";
+  return "An unexpected error occurred.";
 }
 
 export function useTryOn() {
@@ -31,7 +38,7 @@ export function useTryOn() {
       formData.append("person_image", personFile);
       formData.append("clothing_image", clothingFile);
 
-      const response = await fetch(WEBHOOK_URL, {
+      const response = await fetch(API_ROUTE, {
         method: "POST",
         body: formData,
         signal: controller.signal,
@@ -40,11 +47,7 @@ export function useTryOn() {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        const msg =
-          response.status === 500
-            ? "AI processing error. Check your images."
-            : "Server is busy. Please try again.";
-        setState({ isLoading: false, resultUrl: null, error: msg });
+        setState({ isLoading: false, resultUrl: null, error: errorFromStatus(response.status) });
         return;
       }
 
@@ -54,14 +57,11 @@ export function useTryOn() {
       setState({ isLoading: false, resultUrl: url, error: null });
     } catch (err) {
       clearTimeout(timeoutId);
-      const isAbort =
-        err instanceof Error && err.name === "AbortError";
+      const isAbort = err instanceof Error && err.name === "AbortError";
       setState({
         isLoading: false,
         resultUrl: null,
-        error: isAbort
-          ? "Server is busy. Please try again."
-          : "An unexpected error occurred.",
+        error: isAbort ? "Server is busy. Please try again." : "An unexpected error occurred.",
       });
     }
   }
