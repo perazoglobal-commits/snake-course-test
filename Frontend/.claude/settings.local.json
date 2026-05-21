@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"/c/Users/msitk/OneDrive/デスクトップ/AITraining\" ls-tree -r HEAD)",
+      "Bash(git *)"
+    ]
+  }
+}

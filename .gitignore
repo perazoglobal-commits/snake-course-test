@@ -1,12 +1,29 @@
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 .venv/
 venv/
 ENV/
+
+# Environment
 .env
+.env*.local
+
+# Editors
 .vscode/
 .idea/
-*.md
-!GEMINI.md
-!README.md
+
+# Node / Next.js
+node_modules/
+.next/
+.vercel/
+out/
+build/
+dist/
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+*.log
