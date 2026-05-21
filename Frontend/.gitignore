@@ -13,3 +13,10 @@ out/
 
 # Misc
 *.log
+
+
+#mcp server
+.mcp.json
+
+# Playwright MCP test artifacts
+.playwright-mcp/

@@ -51,7 +51,7 @@ export default function SignupPage() {
     }
 
     if (data.session) {
-      router.push("/");
+      router.push("/pricing");
       router.refresh();
     } else {
       setConfirmationSent(true);

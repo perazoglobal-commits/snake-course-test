@@ -1,6 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const PAYMENT_EXEMPT = [
+  "/pricing",
+  "/payment-success",
+  "/api/checkout",
+  "/api/stripe",
+  "/login",
+  "/signup",
+];
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -32,6 +41,7 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isPaymentExempt = PAYMENT_EXEMPT.some((p) => pathname.startsWith(p));
 
   if (!user && !isAuthPage) {
     const url = request.nextUrl.clone();
@@ -43,6 +53,35 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
+  }
+
+  // Check payment status for authenticated users on protected pages
+  if (user && !isPaymentExempt) {
+    // Fast path: trust the paid cookie (set after successful payment verification)
+    const paidCookie = request.cookies.get("paid")?.value;
+    if (paidCookie === "1") {
+      return supabaseResponse;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("has_paid")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.has_paid) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/pricing";
+      return NextResponse.redirect(url);
+    }
+
+    // Set short-lived paid cookie to avoid DB hit on every request
+    supabaseResponse.cookies.set("paid", "1", {
+      maxAge: 3600,
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+    });
   }
 
   return supabaseResponse;
