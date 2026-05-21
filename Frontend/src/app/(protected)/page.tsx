@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Sparkles } from "lucide-react";
-import Header from "@/components/Header";
 import UploadBox from "@/components/UploadBox";
 import ResultViewer from "@/components/ResultViewer";
 import LoadingState from "@/components/LoadingState";
@@ -43,8 +42,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      <Header />
-
       <main className="max-w-5xl mx-auto px-6 py-12">
         <div className="mb-10 text-center">
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
@@ -137,7 +134,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
